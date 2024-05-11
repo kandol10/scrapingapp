@@ -1,5 +1,5 @@
 crewai
-openai==1.25.1
+openai==0.28
 google-ai-generativelanguage==0.6.2
 google-api-core==2.19.0
 google-api-python-client==2.128.0
