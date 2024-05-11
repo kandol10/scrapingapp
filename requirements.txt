@@ -27,7 +27,7 @@ coloredlogs
 comm
 contourpy
 crashtest
-crewai
+crewai==0.1.0  # Assuming this version is compatible with the specified openai range
 cycler
 Cython
 dataclasses-json
@@ -68,7 +68,7 @@ google-crc32c
 google-generativeai
 google-resumable-media
 googleapis-common-protos
-gpt-engineer
+gpt-engineer==0.2.6  # Or another version compatible with the openai version
 gptcache
 graphviz
 greenlet
@@ -132,7 +132,7 @@ npm
 numpy
 oauthlib
 onnxruntime
-openai
+openai>=0.28.1,<0.29
 opencv-python
 opencv-python-headless
 openpyxl
