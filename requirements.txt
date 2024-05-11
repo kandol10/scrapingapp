@@ -1,5 +1,5 @@
 crewai
-openai==0.28
+openai == 2.0.0
 google-ai-generativelanguage==0.6.2
 google-api-core==2.19.0
 google-api-python-client==2.128.0
@@ -14,7 +14,6 @@ google-crc32c==1.5.0
 google-generativeai==0.5.2
 google-resumable-media==2.7.0
 googleapis-common-protos==1.63.0
-gpt-engineer==0.2.5
 langchain==0.1.17
 langchain-community==0.0.36
 langchain-core==0.1.50
