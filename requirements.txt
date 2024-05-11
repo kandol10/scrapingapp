@@ -64,9 +64,6 @@ dnspython==2.6.1
 docstring-parser==0.15
 dulwich==0.21.7
 easyocr==1.7.1
-embedchain==0.1.103
-et-xmlfile==1.1.0
-executing==2.0.1
 fastapi==0.110.3
 fastjsonschema==2.19.1
 filelock==3.13.1
