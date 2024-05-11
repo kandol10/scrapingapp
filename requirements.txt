@@ -12,7 +12,6 @@ backoff
 bcrypt
 beautifulsoup4
 blinker
-bpy
 build
 CacheControl
 cachetools
