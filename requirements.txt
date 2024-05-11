@@ -18,7 +18,7 @@ langchain==0.1.17
 langchain-community==0.0.36
 langchain-core==0.1.50
 langchain-google-genai==1.0.3
-langchain-openai==0.1.6
+langchain-openai
 langchain-text-splitters==0.0.1
 
 aiohttp==3.9.1
