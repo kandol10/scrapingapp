@@ -27,7 +27,7 @@ coloredlogs==15.0.1
 comm==0.2.1
 contourpy==1.2.0
 crashtest==0.4.1
-crewai==0.28.8
+crewai
 cycler==0.12.1
 Cython==3.0.10
 dataclasses-json==0.5.7
