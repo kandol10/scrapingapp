@@ -87,7 +87,6 @@ imageio==2.33.1
 importlib-metadata==7.0.0
 importlib_resources==6.4.0
 installer==0.7.0
-instructor==0.5.2
 ipykernel==6.29.0
 ipython==8.20.0
 itsdangerous==2.1.2
