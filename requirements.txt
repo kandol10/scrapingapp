@@ -1,3 +1,5 @@
+Flask
+gunicorn
 crewai
 openai 
 google-ai-generativelanguage==0.6.2
