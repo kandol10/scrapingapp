@@ -6,10 +6,10 @@ from langchain.tools import Tool
 
 app = Flask(__name__)
 
-# Your existing setup here
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-CSE_ID = "521cbec02241348fc"
+open_ai_key = "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"
+api_gemini = "AIzaSyBRz438Gg-Mnb4s1mfRYEJOB86ec3is2o4"  # Replace with your Google API key
+cse_api_key = "AIzaSyDKlUeIBPsqm_rgDF743yKUmH95FY2xdxw"  # Your CSE API Key
+cse_id = "521cbec02241348fc"  # Your CSE ID
 
 class GoogleSerperAPIWrapper:
     def __init__(self, api_key, cse_id):
@@ -21,7 +21,7 @@ class GoogleSerperAPIWrapper:
         res = service.cse().list(q=query, cx=self.cse_id).execute()
         return [item['link'] for item in res.get('items', [])]
 
-search = GoogleSerperAPIWrapper(GOOGLE_API_KEY, CSE_ID)
+search = GoogleSerperAPIWrapper(cse_api_key, cse_id)
 search_tool = Tool(
     name="Scrape google searches",
     func=search.run,
@@ -64,7 +64,6 @@ crew = Crew(
 
 @app.route('/process', methods=['POST'])
 def process():
-    # You may want to secure this endpoint or validate input
     task_description = request.json.get('task_description', '')
     task = Task(
         description=task_description,
