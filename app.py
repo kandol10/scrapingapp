@@ -3,20 +3,17 @@ from flask import Flask, request, jsonify  # Import Flask and jsonify
 from googleapiclient.discovery import build
 from crewai import Agent, Task, Process, Crew
 from langchain.tools import Tool
+from langchain_community.output_parsers.rail_parser import GuardrailsOutputParser
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Assuming ChatOpenAI is a part of a library that needs to be imported
-# from your_library import ChatOpenAI  # Ensure this is correct
-
+#
 # API keys setup
 GOOGLE_API_KEY = "AIzaSyDKlUeIBPsqm_rgDF743yKUmH95FY2xdxw"
 #OPENAI_API_KEY = "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"
 CSE_ID = "521cbec02241348fc"
 os.environ['OPENAI_API_KEY'] = 'sk-proj-4iQgSQqsMjy3YuQAqY6gT3BlbkFJQnoB3BbzQOfSmkhe7zJv'
-
-
 
 class GoogleSerperAPIWrapper:
     def __init__(self, api_key, cse_id):
@@ -106,9 +103,7 @@ def process():
     )
     crew.tasks = [task]
     result = crew.kickoff()
-    return jsonify(result)  # Return the result as JSON
-
-
+    
 # Run the Flask app
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)
