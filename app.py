@@ -92,6 +92,8 @@ crew = Crew(
 )
 
 # Define the Flask route for processing tasks
+
+# Define the Flask route for processing tasks
 @app.route('/process', methods=['POST'])
 def process():
     # You may want to secure this endpoint or validate input
@@ -103,7 +105,8 @@ def process():
     )
     crew.tasks = [task]
     result = crew.kickoff()
-    
+    return jsonify(result)  # Return the result as JSON
+
 # Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
