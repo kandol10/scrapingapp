@@ -1,16 +1,15 @@
 import os
+from flask import Flask, request, jsonify
 from googleapiclient.discovery import build
 from crewai import Agent, Task, Process, Crew
 from langchain.tools import Tool
 
-# Assuming ChatOpenAI is a part of a library that needs to be imported
-# from your_library import ChatOpenAI  # Ensure this is correct
+app = Flask(__name__)
 
-# API keys setup
-GOOGLE_API_KEY = "AIzaSyDKlUeIBPsqm_rgDF743yKUmH95FY2xdxw"
-#OPENAI_API_KEY = "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"
+# Your existing setup here
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 CSE_ID = "521cbec02241348fc"
-os.environ['OPENAI_API_KEY'] = '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'
 
 class GoogleSerperAPIWrapper:
     def __init__(self, api_key, cse_id):
@@ -22,7 +21,6 @@ class GoogleSerperAPIWrapper:
         res = service.cse().list(q=query, cx=self.cse_id).execute()
         return [item['link'] for item in res.get('items', [])]
 
-# Initialize the search tool with the API key and CSE ID
 search = GoogleSerperAPIWrapper(GOOGLE_API_KEY, CSE_ID)
 search_tool = Tool(
     name="Scrape google searches",
@@ -30,12 +28,10 @@ search_tool = Tool(
     description="Useful for when you need to ask the agent to search the internet",
 )
 
-# Assuming ChatOpenAI requires an API key
 class CustomAgent:
     def __init__(self, openai_api_key):
-        self.ai = ChatOpenAI(openai_api_key=openai_api_key)  # Ensure this is the correct usage
+        self.ai = ChatOpenAI(openai_api_key=openai_api_key)  # Adjust this according to your actual import and API setup
 
-# Define agents
 explorer = Agent(
     role="Senior Researcher",
     goal="Find and explore the most exciting AI projects and companies on the internet.",
@@ -44,7 +40,6 @@ explorer = Agent(
     allow_delegation=False,
     tools=[search_tool],
 )
-
 writer = Agent(
     role="Senior Technical Writer",
     goal="Write engaging blog posts about the latest AI projects.",
@@ -52,7 +47,6 @@ writer = Agent(
     verbose=True,
     allow_delegation=True,
 )
-
 critic = Agent(
     role="Expert Writing Critic",
     goal="Provide feedback and ensure blog posts are engaging and understandable.",
@@ -61,35 +55,25 @@ critic = Agent(
     allow_delegation=True,
 )
 
-# Define tasks
-task_report = Task(
-    description="Summarize the latest AI projects found on the internet into a detailed report.",
-    agent=explorer,
-    expected_output="A detailed report on AI projects with names and descriptions.",
-)
-
-task_blog = Task(
-    description="Write a blog article summarizing the latest AI projects.",
-    agent=writer,
-    expected_output="A blog article with compelling descriptions of AI projects.",
-)
-
-task_critique = Task(
-    description="Ensure the blog article is engaging and properly formatted.",
-    agent=critic,
-    expected_output="Feedback ensuring the article is engaging and well-formatted.",
-)
-
-# Instantiate crew of agents
 crew = Crew(
     agents=[explorer, writer, critic],
-    tasks=[task_report, task_blog, task_critique],
+    tasks=[],
     verbose=2,
     process=Process.sequential,
 )
 
-# Execute the crew process
-result = crew.kickoff()
+@app.route('/process', methods=['POST'])
+def process():
+    # You may want to secure this endpoint or validate input
+    task_description = request.json.get('task_description', '')
+    task = Task(
+        description=task_description,
+        agent=explorer,
+        expected_output="A detailed report on AI projects with names and descriptions.",
+    )
+    crew.tasks = [task]
+    result = crew.kickoff()
+    return jsonify(result)
 
-print("######################")
-print(result)
+if __name__ == '__main__':
+    app.run(debug=True)
