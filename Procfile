@@ -1,1 +1,1 @@
-worker: startup_crew.py
+web: gunicorn app:app
