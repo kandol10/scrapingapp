@@ -4,6 +4,7 @@ from googleapiclient.discovery import build
 from crewai import Agent, Task, Process, Crew
 from langchain.tools import Tool
 from langchain_community.output_parsers.rail_parser import GuardrailsOutputParser
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -13,7 +14,7 @@ app = Flask(__name__)
 GOOGLE_API_KEY = "AIzaSyDKlUeIBPsqm_rgDF743yKUmH95FY2xdxw"
 #OPENAI_API_KEY = "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"
 CSE_ID = "521cbec02241348fc"
-os.environ['OPENAI_API_KEY'] = 'sk-proj-GSAgF39flZvnAeS6FvdrT3BlbkFJ6wHil3O7KA8OiGdmRMUi'
+os.environ['OPENAI_API_KEY'] = openai_api_key
 
 class GoogleSerperAPIWrapper:
     def __init__(self, api_key, cse_id):
