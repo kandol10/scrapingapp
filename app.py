@@ -6,11 +6,24 @@ app = Flask(__name__)
 def safe_execute(code, context):
     """Executes the provided Python code safely in a restricted environment."""
     try:
-        byte_code = compile_restricted_exec(code, '<string>', 'exec')
+        # Check if the code is a string and log its type
+        if not isinstance(code, str):
+            raise ValueError("Code is not a string")
+        print(f"Code to execute: {code}")
+        
+        compile_result = compile_restricted_exec(code, '<string>', 'exec')
+        byte_code = compile_result.code  # Extract the code object
+        print(f"Compiled byte code: {byte_code}")
+        
+        # Additional debug statement
+        print(f"Type of byte_code: {type(byte_code)}")
+        
         exec(byte_code, {"__builtins__": {}}, context)
     except Exception as e:
+        print(f"Exception during execution: {e}")
         return {"error": str(e)}
     return context
+
 
 @app.route('/evaluate_code', methods=['POST'])
 def evaluate_code():
@@ -37,6 +50,8 @@ def evaluate_code():
         return jsonify({"result": "Correct"})
     else:
         return jsonify({"result": "Incorrect", "expected": expected_output, "received": context.get('output')})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
