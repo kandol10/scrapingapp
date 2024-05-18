@@ -1,57 +1,75 @@
 from flask import Flask, request, jsonify
-from RestrictedPython import compile_restricted_exec
 
 app = Flask(__name__)
 
-def safe_execute(code, context):
-    """Executes the provided Python code safely in a restricted environment."""
-    try:
-        # Check if the code is a string and log its type
-        if not isinstance(code, str):
-            raise ValueError("Code is not a string")
-        print(f"Code to execute: {code}")
-        
-        compile_result = compile_restricted_exec(code, '<string>', 'exec')
-        byte_code = compile_result.code  # Extract the code object
-        print(f"Compiled byte code: {byte_code}")
-        
-        # Additional debug statement
-        print(f"Type of byte_code: {type(byte_code)}")
-        
-        exec(byte_code, {"__builtins__": {}}, context)
-    except Exception as e:
-        print(f"Exception during execution: {e}")
-        return {"error": str(e)}
-    return context
+# Define the questions and test cases
+questions = {
+    1: {
+        "name": "Binary to Decimal",
+        "prompt": "Write a function bin_to_dec that converts a binary string to a decimal integer.",
+        "test_cases": [
+            {"input": "bin_to_dec('101')", "expected_output": 5},
+            {"input": "bin_to_dec('111')", "expected_output": 7},
+            {"input": "bin_to_dec('100')", "expected_output": 4}
+        ]
+    },
+    2: {
+        "name": "Sum of Two Numbers",
+        "prompt": "Write a function sum_two_numbers that returns the sum of two numbers.",
+        "test_cases": [
+            {"input": "sum_two_numbers(2, 3)", "expected_output": 5},
+            {"input": "sum_two_numbers(10, 5)", "expected_output": 15},
+            {"input": "sum_two_numbers(0, 0)", "expected_output": 0}
+        ]
+    }
+}
 
+def safe_execute(user_code, question_id):
+    """Executes the provided Python code safely and evaluates against test cases."""
+    context = {}
+    feedback = []
+    score = 0
+    total_tests = len(questions[question_id]["test_cases"])
+    
+    try:
+        compiled_code = compile(user_code, '<string>', 'exec')
+        exec(compiled_code, context)
+    except Exception as e:
+        return {"error": str(e), "feedback": "Code compilation or execution failed"}
+
+    for test_case in questions[question_id]["test_cases"]:
+        input_expression = test_case['input']
+        expected_output = test_case['expected_output']
+        try:
+            output = eval(input_expression, context)
+            if output == expected_output:
+                score += 1
+                feedback.append({"input": input_expression, "result": "Correct", "received": output})
+            else:
+                feedback.append({"input": input_expression, "result": "Incorrect", "expected": expected_output, "received": output})
+        except Exception as e:
+            feedback.append({"input": input_expression, "result": "Error", "error": str(e)})
+
+    return {"score": score, "total_tests": total_tests, "feedback": feedback}
 
 @app.route('/evaluate_code', methods=['POST'])
 def evaluate_code():
-    user_code = request.json.get('code')
-    expected_output = request.json.get('expected_output')
+    try:
+        data = request.get_json()
+        user_code = data['code']
+        question_id = data['question_id']
+        
+        print(f"Received code: {user_code}")  # Debugging output
 
-    # Log the received code to verify
-    print(f"Received code: {user_code}")
-    print(f"Expected output: {expected_output}")
+        # Check if the code and question ID are provided
+        if not user_code or not question_id:
+            raise ValueError("Missing 'code' or 'question_id' in the JSON data")
 
-    # Ensure the user code is a string
-    if not isinstance(user_code, str):
-        return jsonify({"error": "User code must be a string"}), 400
-
-    # Context where the output should be stored by the user code
-    context = {"output": None}
-    result = safe_execute(user_code, context)
-    
-    if 'error' in result:
-        return jsonify(result), 400
-
-    # Check if the user's output matches the expected output
-    if context.get('output') == expected_output:
-        return jsonify({"result": "Correct"})
-    else:
-        return jsonify({"result": "Incorrect", "expected": expected_output, "received": context.get('output')})
-
-
+        # Execute the code safely
+        result = safe_execute(user_code, question_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
